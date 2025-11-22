@@ -1,5 +1,5 @@
 import XCTest
-@testable import PingMenubarLib
+@testable import PingersLib
 
 @MainActor
 final class PingServiceTests: XCTestCase {

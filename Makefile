@@ -1,8 +1,8 @@
-# Makefile for PingMenubar macOS app
+# Makefile for Pingers macOS app
 
 # Configuration
-APP_NAME = PingMenubar
-BUNDLE_ID = com.pingmenubar.app
+APP_NAME = Pingers
+BUNDLE_ID = com.pingers.app
 BUILD_DIR = .build
 DIST_DIR = dist
 APP_BUNDLE = $(DIST_DIR)/$(APP_NAME).app
@@ -47,7 +47,7 @@ package: build-release
 	@cp assets/icons/menubar-icon@2x.png $(APP_BUNDLE)/Contents/Resources/menubar-icon@2x.png
 	@sed -e 's/$$(EXECUTABLE_NAME)/$(APP_NAME)/g' \
 	     -e 's/$$(PRODUCT_NAME)/$(APP_NAME)/g' \
-	     Sources/PingMenubar/Info.plist > $(APP_BUNDLE)/Contents/Info.plist
+	     Sources/Pingers/Info.plist > $(APP_BUNDLE)/Contents/Info.plist
 	@echo -n "APPL????" > $(APP_BUNDLE)/Contents/PkgInfo
 	@echo "✓ App bundle created at: $(APP_BUNDLE)"
 
@@ -83,7 +83,7 @@ dev:
 
 # Show help
 help:
-	@echo "PingMenubar Build System"
+	@echo "Pingers Build System"
 	@echo ""
 	@echo "Available targets:"
 	@echo "  make              - Build and package release .app bundle (default)"

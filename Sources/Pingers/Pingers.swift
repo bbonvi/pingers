@@ -1,9 +1,9 @@
 import SwiftUI
 import AppKit
-import PingMenubarLib
+import PingersLib
 
 @main
-struct PingMenubarApp: App {
+struct PingersApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some Scene {

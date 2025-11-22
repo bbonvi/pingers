@@ -1,10 +1,10 @@
 #!/bin/bash
-# Script to package PingMenubar executable into .app bundle
+# Script to package Pingers executable into .app bundle
 
 set -e
 
 # Configuration
-APP_NAME="PingMenubar"
+APP_NAME="Pingers"
 BUILD_DIR=".build/release"
 BUNDLE_DIR="dist/${APP_NAME}.app"
 CONTENTS_DIR="${BUNDLE_DIR}/Contents"
@@ -31,7 +31,7 @@ cp assets/icons/menubar-icon@2x.png "${RESOURCES_DIR}/menubar-icon@2x.png"
 echo "Creating Info.plist with proper values..."
 sed -e 's/$(EXECUTABLE_NAME)/'"${APP_NAME}"'/g' \
     -e 's/$(PRODUCT_NAME)/'"${APP_NAME}"'/g' \
-    Sources/PingMenubar/Info.plist > "${CONTENTS_DIR}/Info.plist"
+    Sources/Pingers/Info.plist > "${CONTENTS_DIR}/Info.plist"
 
 echo "Creating PkgInfo..."
 echo -n "APPL????" > "${CONTENTS_DIR}/PkgInfo"

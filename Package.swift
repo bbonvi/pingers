@@ -4,27 +4,27 @@
 import PackageDescription
 
 let package = Package(
-    name: "PingMenubar",
+    name: "Pingers",
     platforms: [
         .macOS(.v11) // Big Sur
     ],
     products: [
         .library(
-            name: "PingMenubarLib",
-            targets: ["PingMenubarLib"]
+            name: "PingersLib",
+            targets: ["PingersLib"]
         ),
     ],
     targets: [
         .target(
-            name: "PingMenubarLib"
+            name: "PingersLib"
         ),
         .executableTarget(
-            name: "PingMenubar",
-            dependencies: ["PingMenubarLib"]
+            name: "Pingers",
+            dependencies: ["PingersLib"]
         ),
         .testTarget(
-            name: "PingMenubarTests",
-            dependencies: ["PingMenubarLib"]
+            name: "PingersTests",
+            dependencies: ["PingersLib"]
         ),
     ]
 )

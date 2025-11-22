@@ -1,4 +1,4 @@
-# PingMenubar
+# Pingers
 
 A minimal macOS Big Sur+ menu bar app that continuously pings 1.1.1.1 and displays current network latency.
 
@@ -24,16 +24,16 @@ A minimal macOS Big Sur+ menu bar app that continuously pings 1.1.1.1 and displa
 ## Project Structure
 
 ```
-PingMenubar/
+Pingers/
 ├── Sources/
-│   ├── PingMenubar/           # Main executable target
-│   │   ├── PingMenubar.swift  # App entry point, UI, menu logic
+│   ├── Pingers/           # Main executable target
+│   │   ├── Pingers.swift  # App entry point, UI, menu logic
 │   │   └── Info.plist         # App metadata (LSUIElement=true)
-│   └── PingMenubarLib/        # Library target (testable)
+│   └── PingersLib/        # Library target (testable)
 │       ├── PingService.swift  # Ping execution & parsing
 │       └── PingScheduler.swift # Periodic scheduler
 ├── Tests/
-│   └── PingMenubarTests/
+│   └── PingersTests/
 │       └── PingServiceTests.swift # Unit tests for parsing
 ├── Package.swift              # Swift Package Manager definition
 ├── Makefile                   # Build automation
@@ -46,7 +46,7 @@ PingMenubar/
 The easiest way to build and package the app:
 
 ```bash
-# Build and package .app bundle (creates dist/PingMenubar.app)
+# Build and package .app bundle (creates dist/Pingers.app)
 make
 
 # Run the app
@@ -86,7 +86,7 @@ If you're running natively on macOS, omit the `mac` prefix.
 mac swift build
 
 # Output location
-.build/debug/PingMenubar
+.build/debug/Pingers
 ```
 
 **Note**: SPM produces a bare executable without app bundle. For full app bundle with Info.plist/entitlements, use the packaging script (see "Packaging" section below).
@@ -97,11 +97,11 @@ mac swift build
 # Build via command line
 mac /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild \
   -workspace .swiftpm/xcode/package.xcworkspace \
-  -scheme PingMenubar \
+  -scheme Pingers \
   -destination 'platform=macOS'
 
 # Built app location
-~/Library/Developer/Xcode/DerivedData/pinger-*/Build/Products/Debug/PingMenubar.app
+~/Library/Developer/Xcode/DerivedData/pinger-*/Build/Products/Debug/Pingers.app
 ```
 
 Or open `.swiftpm/xcode/package.xcworkspace` in Xcode and build via UI (Cmd+B).
@@ -112,14 +112,14 @@ Or open `.swiftpm/xcode/package.xcworkspace` in Xcode and build via UI (Cmd+B).
 
 ```bash
 # Run directly (no app bundle)
-mac .build/debug/PingMenubar
+mac .build/debug/Pingers
 ```
 
 ### From Xcode Build
 
 ```bash
 # Find the built app
-APP_PATH=$(mac find ~/Library/Developer/Xcode/DerivedData -name "PingMenubar.app" -type d | head -1)
+APP_PATH=$(mac find ~/Library/Developer/Xcode/DerivedData -name "Pingers.app" -type d | head -1)
 
 # Launch
 mac open "$APP_PATH"
@@ -162,22 +162,22 @@ make
 
 The packaging process:
 1. Builds a release-optimized executable via `mac swift build -c release`
-2. Creates the `.app` bundle structure in `dist/PingMenubar.app`
+2. Creates the `.app` bundle structure in `dist/Pingers.app`
 3. Copies the executable to `Contents/MacOS/`
 4. Generates a proper `Info.plist` with LSUIElement=true (menu bar only app)
 5. Creates the `PkgInfo` file
 
-**Output**: `dist/PingMenubar.app`
+**Output**: `dist/Pingers.app`
 
 ### Installing
 
 ```bash
 # Run directly from dist/
-mac open dist/PingMenubar.app
+mac open dist/Pingers.app
 
 # Or copy to Applications folder
-mac cp -r dist/PingMenubar.app /Applications/
-mac open /Applications/PingMenubar.app
+mac cp -r dist/Pingers.app /Applications/
+mac open /Applications/Pingers.app
 ```
 
 **Note**: The app is unsigned (local development only). For distribution, you'll need to configure proper code signing and notarization.
@@ -188,7 +188,7 @@ mac open /Applications/PingMenubar.app
 # Run all unit tests
 mac /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test \
   -workspace .swiftpm/xcode/package.xcworkspace \
-  -scheme PingMenubar-Package \
+  -scheme Pingers-Package \
   -destination 'platform=macOS'
 ```
 
@@ -253,7 +253,7 @@ Manual workflow:
 
 1. **Code changes**: Edit source files in `Sources/`
 2. **Build**: `make build` or `mac swift build` for quick iteration
-3. **Test**: `make test` or `mac xcodebuild test -workspace .swiftpm/xcode/package.xcworkspace -scheme PingMenubar-Package -destination 'platform=macOS'`
+3. **Test**: `make test` or `mac xcodebuild test -workspace .swiftpm/xcode/package.xcworkspace -scheme Pingers-Package -destination 'platform=macOS'`
 4. **Package**: `make package` to create .app bundle
 
 ## Future Enhancements (Section D - Deferred)
