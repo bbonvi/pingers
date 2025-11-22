@@ -42,6 +42,9 @@ package: build-release
 	@mkdir -p $(APP_BUNDLE)/Contents/Resources
 	@cp $(BUILD_DIR)/release/$(APP_NAME) $(APP_BUNDLE)/Contents/MacOS/$(APP_NAME)
 	@chmod +x $(APP_BUNDLE)/Contents/MacOS/$(APP_NAME)
+	@cp assets/icons/AppIcon.icns $(APP_BUNDLE)/Contents/Resources/AppIcon.icns
+	@cp assets/icons/menubar-icon.png $(APP_BUNDLE)/Contents/Resources/menubar-icon.png
+	@cp assets/icons/menubar-icon@2x.png $(APP_BUNDLE)/Contents/Resources/menubar-icon@2x.png
 	@sed -e 's/$$(EXECUTABLE_NAME)/$(APP_NAME)/g' \
 	     -e 's/$$(PRODUCT_NAME)/$(APP_NAME)/g' \
 	     Sources/PingMenubar/Info.plist > $(APP_BUNDLE)/Contents/Info.plist
@@ -58,7 +61,8 @@ clean:
 # Install to /Applications
 install: package
 	@echo "Installing to /Applications..."
-	mac cp -r $(APP_BUNDLE) /Applications/
+	mac sudo rm -rf /Applications/$(APP_NAME).app
+	mac sudo cp -r $(APP_BUNDLE) /Applications/
 	@echo "✓ Installed to /Applications/$(APP_NAME).app"
 
 # Run the app from dist

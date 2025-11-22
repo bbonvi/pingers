@@ -48,6 +48,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 
         if let button = statusItem?.button {
+            // Load menu bar icon from bundle resources
+            if let iconImage = loadMenuBarIcon() {
+                iconImage.isTemplate = true // Enable template mode for system appearance
+                button.image = iconImage
+                button.imagePosition = .imageLeading
+            }
+
             button.title = "Starting..."
             button.setAccessibilityLabel("Ping Status")
         }
@@ -399,6 +406,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Update menu with new details
         updateMenu()
+    }
+
+    private func loadMenuBarIcon() -> NSImage? {
+        // Try loading from bundle resources
+        if let resourcePath = Bundle.main.resourcePath {
+            let iconPath = (resourcePath as NSString).appendingPathComponent("menubar-icon.png")
+            if let image = NSImage(contentsOfFile: iconPath) {
+                return image
+            }
+        }
+
+        // Fallback: try loading by name (if embedded in asset catalog)
+        if let image = NSImage(named: "menubar-icon") {
+            return image
+        }
+
+        return nil
     }
 
     func applicationWillTerminate(_ notification: Notification) {

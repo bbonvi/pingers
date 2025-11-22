@@ -23,6 +23,11 @@ echo "Copying executable..."
 cp "${BUILD_DIR}/${APP_NAME}" "${MACOS_DIR}/${APP_NAME}"
 chmod +x "${MACOS_DIR}/${APP_NAME}"
 
+echo "Copying icons..."
+cp assets/icons/AppIcon.icns "${RESOURCES_DIR}/AppIcon.icns"
+cp assets/icons/menubar-icon.png "${RESOURCES_DIR}/menubar-icon.png"
+cp assets/icons/menubar-icon@2x.png "${RESOURCES_DIR}/menubar-icon@2x.png"
+
 echo "Creating Info.plist with proper values..."
 sed -e 's/$(EXECUTABLE_NAME)/'"${APP_NAME}"'/g' \
     -e 's/$(PRODUCT_NAME)/'"${APP_NAME}"'/g' \
