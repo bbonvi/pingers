@@ -23,15 +23,25 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var lastCheckedTime: Date?
     var currentInterval: TimeInterval = 10.0
     var pingHistory: [PingResult] = [] // Track last 3 ping results
+    var useMonospace: Bool = false
+    var pingHost: String = "1.1.1.1"
 
-    // UserDefaults key for interval preference
+    // UserDefaults keys
     private let intervalKey = "pingIntervalSeconds"
+    private let monospaceFontKey = "useMonospaceFont"
+    private let pingHostKey = "pingHost"
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // Load saved interval preference or use default
+        // Load saved preferences or use defaults
         let savedInterval = UserDefaults.standard.double(forKey: intervalKey)
         if savedInterval > 0 {
             currentInterval = savedInterval
+        }
+
+        useMonospace = UserDefaults.standard.bool(forKey: monospaceFontKey)
+
+        if let savedHost = UserDefaults.standard.string(forKey: pingHostKey), !savedHost.isEmpty {
+            pingHost = savedHost
         }
 
         // Create the status item in the menu bar
@@ -46,7 +56,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         updateMenu()
 
         // Initialize ping service and scheduler
-        let service = PingService()
+        let service = PingService(host: pingHost)
         self.pingService = service
 
         let scheduler = PingScheduler(service: service, intervalSeconds: currentInterval) { [weak self] result in
@@ -113,6 +123,56 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         // Separator before actions
+        menu.addItem(NSMenuItem.separator())
+
+        // Settings submenu
+        let settingsMenu = NSMenu()
+
+        // Monospace font toggle
+        let monospaceFontItem = NSMenuItem(title: "Use Monospace Font", action: #selector(toggleMonospaceFont), keyEquivalent: "")
+        monospaceFontItem.state = useMonospace ? .on : .off
+        settingsMenu.addItem(monospaceFontItem)
+
+        // Service/host selection submenu
+        let serviceMenu = NSMenu()
+        let services: [(title: String, host: String)] = [
+            ("1.1.1.1 (Cloudflare)", "1.1.1.1"),
+            ("1.0.0.1 (Cloudflare)", "1.0.0.1"),
+            ("8.8.8.8 (Google)", "8.8.8.8"),
+            ("8.8.4.4 (Google)", "8.8.4.4"),
+            ("9.9.9.9 (Quad9)", "9.9.9.9")
+        ]
+
+        let presetHosts = services.map { $0.host }
+        let isCustomHost = !presetHosts.contains(pingHost)
+
+        for (title, host) in services {
+            let item = NSMenuItem(title: title, action: #selector(setPingHost(_:)), keyEquivalent: "")
+            item.representedObject = host
+            item.state = (pingHost == host) ? .on : .off
+            serviceMenu.addItem(item)
+        }
+
+        // Show custom host if not a preset
+        if isCustomHost {
+            serviceMenu.addItem(NSMenuItem.separator())
+            let customItem = NSMenuItem(title: "\(pingHost) (Custom)", action: nil, keyEquivalent: "")
+            customItem.state = .on
+            customItem.isEnabled = false
+            serviceMenu.addItem(customItem)
+        }
+
+        serviceMenu.addItem(NSMenuItem.separator())
+        serviceMenu.addItem(NSMenuItem(title: "Custom...", action: #selector(showCustomHostDialog), keyEquivalent: ""))
+
+        let serviceMenuItem = NSMenuItem(title: "Ping Service", action: nil, keyEquivalent: "")
+        serviceMenuItem.submenu = serviceMenu
+        settingsMenu.addItem(serviceMenuItem)
+
+        let settingsMenuItem = NSMenuItem(title: "Settings", action: nil, keyEquivalent: "")
+        settingsMenuItem.submenu = settingsMenu
+        menu.addItem(settingsMenuItem)
+
         menu.addItem(NSMenuItem.separator())
 
         // Interval preferences submenu
@@ -210,6 +270,69 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         updateMenu()
     }
 
+    @objc func toggleMonospaceFont() {
+        useMonospace.toggle()
+        UserDefaults.standard.set(useMonospace, forKey: monospaceFontKey)
+
+        // Update display with new font preference
+        if let result = currentResult {
+            handlePingResult(result)
+        }
+
+        updateMenu()
+    }
+
+    @objc func setPingHost(_ sender: NSMenuItem) {
+        guard let newHost = sender.representedObject as? String else { return }
+        applyPingHost(newHost)
+    }
+
+    @objc func showCustomHostDialog() {
+        let alert = NSAlert()
+        alert.messageText = "Custom Ping Service"
+        alert.informativeText = "Enter a hostname or IP address to ping:"
+        alert.addButton(withTitle: "OK")
+        alert.addButton(withTitle: "Cancel")
+
+        let textField = NSTextField(frame: NSRect(x: 0, y: 0, width: 300, height: 24))
+        textField.stringValue = pingHost
+        textField.placeholderString = "e.g., example.com or 192.168.1.1"
+        alert.accessoryView = textField
+
+        alert.window.initialFirstResponder = textField
+
+        let response = alert.runModal()
+        if response == .alertFirstButtonReturn {
+            let newHost = textField.stringValue.trimmingCharacters(in: .whitespaces)
+            if !newHost.isEmpty {
+                applyPingHost(newHost)
+            }
+        }
+    }
+
+    private func applyPingHost(_ newHost: String) {
+        // Save to UserDefaults
+        UserDefaults.standard.set(newHost, forKey: pingHostKey)
+        pingHost = newHost
+
+        // Recreate service and scheduler with new host
+        pingScheduler?.stop()
+
+        let service = PingService(host: newHost)
+        self.pingService = service
+
+        let scheduler = PingScheduler(service: service, intervalSeconds: currentInterval) { [weak self] result in
+            Task { @MainActor in
+                self?.handlePingResult(result)
+            }
+        }
+        self.pingScheduler = scheduler
+        scheduler.start()
+
+        // Update menu to show new selection
+        updateMenu()
+    }
+
     @objc func refreshNow() {
         Task { @MainActor in
             guard let service = pingService else { return }
@@ -262,10 +385,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             accessibilityLabel = "Ping: Command failed"
         }
 
-        // Apply color and monospaced font to button title
+        // Apply color and font to button title
+        let font: NSFont = useMonospace
+            ? NSFont.monospacedSystemFont(ofSize: 0, weight: .regular)
+            : NSFont.systemFont(ofSize: 0)
+
         let attributes: [NSAttributedString.Key: Any] = [
             .foregroundColor: color,
-            .font: NSFont.monospacedSystemFont(ofSize: 0, weight: .regular)
+            .font: font
         ]
         button.attributedTitle = NSAttributedString(string: text, attributes: attributes)
         button.setAccessibilityLabel(accessibilityLabel)
