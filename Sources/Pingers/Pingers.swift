@@ -22,7 +22,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var currentResult: PingResult?
     var lastCheckedTime: Date?
     var currentInterval: TimeInterval = 10.0
-    var pingHistory: [PingResult] = [] // Track last 3 ping results
+    var pingHistory: [PingResult] = [] // Track last 5 ping results
     var useMonospace: Bool = false
     var pingHost: String = "1.1.1.1"
 

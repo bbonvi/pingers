@@ -12,7 +12,7 @@ MACOS_DIR="${CONTENTS_DIR}/MacOS"
 RESOURCES_DIR="${CONTENTS_DIR}/Resources"
 
 echo "Building release executable..."
-mac swift build -c release
+swift build -c release
 
 echo "Creating app bundle structure..."
 rm -rf dist
@@ -40,7 +40,7 @@ echo ""
 echo "✓ App bundle created at: ${BUNDLE_DIR}"
 echo ""
 echo "To run:"
-echo "  mac open ${BUNDLE_DIR}"
+echo "  open ${BUNDLE_DIR}"
 echo ""
 echo "To copy to Applications:"
-echo "  mac cp -r ${BUNDLE_DIR} /Applications/"
+echo "  cp -r ${BUNDLE_DIR} /Applications/"

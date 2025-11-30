@@ -6,8 +6,8 @@ BUNDLE_ID = com.pingers.app
 BUILD_DIR = .build
 DIST_DIR = dist
 APP_BUNDLE = $(DIST_DIR)/$(APP_NAME).app
-SWIFT = mac swift
-XCODEBUILD = mac /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild
+SWIFT = swift
+XCODEBUILD = /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild
 WORKSPACE = .swiftpm/xcode/package.xcworkspace
 
 # Targets
@@ -49,7 +49,7 @@ package: build-release
 	     -e 's/$$(PRODUCT_NAME)/$(APP_NAME)/g' \
 	     Sources/Pingers/Info.plist > $(APP_BUNDLE)/Contents/Info.plist
 	@echo -n "APPL????" > $(APP_BUNDLE)/Contents/PkgInfo
-	@mac codesign --force --deep -s - $(APP_BUNDLE)
+	@codesign --force --deep -s - $(APP_BUNDLE)
 	@echo "✓ App bundle signed (ad-hoc)"
 	@echo "✓ App bundle created at: $(APP_BUNDLE)"
 
@@ -63,25 +63,25 @@ clean:
 # Install to /Applications
 install: package
 	@echo "Installing to /Applications..."
-	mac sudo rm -rf /Applications/$(APP_NAME).app
-	mac sudo cp -r $(APP_BUNDLE) /Applications/
+	sudo rm -rf /Applications/$(APP_NAME).app
+	sudo cp -r $(APP_BUNDLE) /Applications/
 	@echo "✓ Installed to /Applications/$(APP_NAME).app"
 
 # Run the app from dist
 run: package
 	@echo "Launching $(APP_NAME)..."
-	mac open $(APP_BUNDLE)
+	open $(APP_BUNDLE)
 
 # Run the app from /Applications if installed
 run-installed:
 	@echo "Launching installed $(APP_NAME)..."
-	mac open /Applications/$(APP_NAME).app
+	open /Applications/$(APP_NAME).app
 
 # Build and run debug version
 dev:
 	@echo "Building and running debug version..."
 	$(SWIFT) build
-	mac $(BUILD_DIR)/debug/$(APP_NAME)
+	$(BUILD_DIR)/debug/$(APP_NAME)
 
 # Show help
 help:

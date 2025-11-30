@@ -9,7 +9,7 @@ A minimal macOS Big Sur+ menu bar app that continuously pings 1.1.1.1 and displa
   - Default text color: <100ms
   - Yellow: 100-199ms
   - Red: ≥200ms or error
-- Recent ping history (last 3 results)
+- Recent ping history (last 5 results)
 - Configurable ping interval (1s, 2s, 5s, 10s, 30s, 60s)
 - Specific error labels (Timeout, Unreachable, Failed)
 - Manual refresh action (Cmd+R)
@@ -67,23 +67,11 @@ make help
 
 ## Building
 
-### Environment Note
-
-This project was developed in OrbStack (Linux environment). All macOS commands must be prefixed with `mac` when running from OrbStack:
-
-```bash
-# Example:
-mac swift build
-mac xcodebuild ...
-```
-
-If you're running natively on macOS, omit the `mac` prefix.
-
 ### Option 1: Swift Package Manager (Recommended for Development)
 
 ```bash
 # Build
-mac swift build
+swift build
 
 # Output location
 .build/debug/Pingers
@@ -95,7 +83,7 @@ mac swift build
 
 ```bash
 # Build via command line
-mac /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild \
+xcodebuild \
   -workspace .swiftpm/xcode/package.xcworkspace \
   -scheme Pingers \
   -destination 'platform=macOS'
@@ -112,17 +100,17 @@ Or open `.swiftpm/xcode/package.xcworkspace` in Xcode and build via UI (Cmd+B).
 
 ```bash
 # Run directly (no app bundle)
-mac .build/debug/Pingers
+.build/debug/Pingers
 ```
 
 ### From Xcode Build
 
 ```bash
 # Find the built app
-APP_PATH=$(mac find ~/Library/Developer/Xcode/DerivedData -name "Pingers.app" -type d | head -1)
+APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "Pingers.app" -type d | head -1)
 
 # Launch
-mac open "$APP_PATH"
+open "$APP_PATH"
 ```
 
 Or run directly from Xcode (Cmd+R).
@@ -135,7 +123,7 @@ Or run directly from Xcode (Cmd+R).
 - Click menu bar item to view dropdown with:
   - Current status
   - Last checked timestamp
-  - Recent history (last 3 pings)
+  - Recent history (last 5 pings)
   - Check Interval submenu
   - Refresh Now action
   - Quit action
@@ -161,7 +149,7 @@ make
 ```
 
 The packaging process:
-1. Builds a release-optimized executable via `mac swift build -c release`
+1. Builds a release-optimized executable via `swift build -c release`
 2. Creates the `.app` bundle structure in `dist/Pingers.app`
 3. Copies the executable to `Contents/MacOS/`
 4. Generates a proper `Info.plist` with LSUIElement=true (menu bar only app)
@@ -173,11 +161,11 @@ The packaging process:
 
 ```bash
 # Run directly from dist/
-mac open dist/Pingers.app
+open dist/Pingers.app
 
 # Or copy to Applications folder
-mac cp -r dist/Pingers.app /Applications/
-mac open /Applications/Pingers.app
+cp -r dist/Pingers.app /Applications/
+open /Applications/Pingers.app
 ```
 
 **Note**: The app is unsigned (local development only). For distribution, you'll need to configure proper code signing and notarization.
@@ -186,18 +174,19 @@ mac open /Applications/Pingers.app
 
 ```bash
 # Run all unit tests
-mac /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test \
+xcodebuild test \
   -workspace .swiftpm/xcode/package.xcworkspace \
   -scheme Pingers-Package \
   -destination 'platform=macOS'
+
+# Or use the Makefile
+make test
 ```
 
 **Test Coverage**:
 - Ping output parsing (success, timeout, malformed)
 - Latency extraction (whole numbers, decimals, high precision)
 - PingResult equality and online status checks
-
-**Note**: `mac swift test` does not work due to XCTest module availability issues in this environment. Use xcodebuild instead.
 
 ## Architecture
 
@@ -226,7 +215,6 @@ mac /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test \
 ## Known Issues
 
 - SPM warns about unhandled Info.plist file (expected; it's used by packaging script to create .app bundle).
-- Test execution via `mac swift test` fails in OrbStack environment; use `make test` or xcodebuild instead.
 
 ## Development Workflow
 
@@ -252,8 +240,8 @@ make install
 Manual workflow:
 
 1. **Code changes**: Edit source files in `Sources/`
-2. **Build**: `make build` or `mac swift build` for quick iteration
-3. **Test**: `make test` or `mac xcodebuild test -workspace .swiftpm/xcode/package.xcworkspace -scheme Pingers-Package -destination 'platform=macOS'`
+2. **Build**: `make build` or `swift build` for quick iteration
+3. **Test**: `make test`
 4. **Package**: `make package` to create .app bundle
 
 ## Future Enhancements (Section D - Deferred)
