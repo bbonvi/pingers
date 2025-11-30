@@ -49,6 +49,8 @@ package: build-release
 	     -e 's/$$(PRODUCT_NAME)/$(APP_NAME)/g' \
 	     Sources/Pingers/Info.plist > $(APP_BUNDLE)/Contents/Info.plist
 	@echo -n "APPL????" > $(APP_BUNDLE)/Contents/PkgInfo
+	@mac codesign --force --deep -s - $(APP_BUNDLE)
+	@echo "✓ App bundle signed (ad-hoc)"
 	@echo "✓ App bundle created at: $(APP_BUNDLE)"
 
 # Clean build artifacts
