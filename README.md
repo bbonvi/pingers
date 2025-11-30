@@ -10,7 +10,8 @@ A minimal macOS Big Sur+ menu bar app that continuously pings 1.1.1.1 and displa
   - Yellow: 100-199ms
   - Red: ≥200ms or error
 - Recent ping history (last 5 results)
-- Configurable ping interval (1s, 2s, 5s, 10s, 30s, 60s)
+- Configurable ping interval (500ms, 1s, 2s, 5s, 10s, 30s, 60s)
+- Multiple ping targets (Cloudflare, Google, Quad9) or custom host
 - Specific error labels (Timeout, Unreachable, Failed)
 - Manual refresh action (Cmd+R)
 - Menu bar only (no dock icon)
@@ -35,6 +36,11 @@ Pingers/
 ├── Tests/
 │   └── PingersTests/
 │       └── PingServiceTests.swift # Unit tests for parsing
+├── assets/
+│   └── icons/                 # App and menu bar icons
+│       ├── AppIcon.icns
+│       ├── menubar-icon.png
+│       └── menubar-icon@2x.png
 ├── Package.swift              # Swift Package Manager definition
 ├── Makefile                   # Build automation
 ├── package-app.sh             # Script to create .app bundle
@@ -253,4 +259,4 @@ Manual workflow:
 
 ## License
 
-This project is provided as-is for demonstration purposes.
+This project is licensed under the GNU General Public License v3.0. See [LICENSE](LICENSE) for details.
