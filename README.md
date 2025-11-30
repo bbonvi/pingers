@@ -2,6 +2,8 @@
 
 A minimal macOS Big Sur+ menu bar app that continuously pings 1.1.1.1 and displays current network latency.
 
+![Pingers menu bar screenshot](assets/screenshots/menu.png)
+
 ## Features
 
 - Real-time latency display in menu bar (e.g., "42 ms")
