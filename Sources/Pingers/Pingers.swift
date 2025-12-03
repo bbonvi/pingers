@@ -78,7 +78,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let statusText: String
             switch result {
             case .success(let latencyMs):
-                statusText = String(format: "Latency: %.0f ms", latencyMs)
+                let format = useMonospace ? "Latency: %3.0fms" : "Latency: %.0f ms"
+                statusText = String(format: format, latencyMs)
             case .timeout:
                 statusText = "Status: Timeout"
             case .networkUnreachable:
@@ -212,7 +213,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         switch result {
         case .success(let latencyMs):
-            text = String(format: "%.0f ms", latencyMs)
+            let format = useMonospace ? "%3.0fms" : "%.0f ms"
+            text = String(format: format, latencyMs)
             // Apply same color coding as status item
             if latencyMs < 100 {
                 color = .labelColor // Default text color
@@ -358,7 +360,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         switch result {
         case .success(let latencyMs):
-            text = String(format: "%.0f ms", latencyMs)
+            let format = useMonospace ? "%3.0fms" : "%.0f ms"
+            text = String(format: format, latencyMs)
             // Color scheme: default for <100ms, yellow for 100-199ms, red for ≥200ms
             if latencyMs < 100 {
                 color = .labelColor // Default text color
